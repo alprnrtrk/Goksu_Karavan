@@ -48,6 +48,10 @@ const initHeroSlider = (node) => {
 };
 
 const bootHeroPartial = (node) => {
+	if (!node || node.dataset.partial !== 'hero') {
+		return;
+	}
+
 	animateHero(node);
 	initHeroSlider(node);
 };

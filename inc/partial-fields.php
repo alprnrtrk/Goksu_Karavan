@@ -912,7 +912,7 @@ function auriel_enqueue_repeater_assets(): void
   $base = get_template_directory();
   $uri = get_template_directory_uri();
 
-  $style_rel = 'assets/admin/hero-slides.css';
+  $style_rel = 'assets/admin/content-manager.css';
   $style_path = $base . '/' . $style_rel;
   if (file_exists($style_path)) {
     wp_enqueue_style(
@@ -923,7 +923,7 @@ function auriel_enqueue_repeater_assets(): void
     );
   }
 
-  $script_rel = 'assets/admin/hero-slides.js';
+  $script_rel = 'assets/admin/content-manager.js';
   $script_path = $base . '/' . $script_rel;
   if (file_exists($script_path)) {
     wp_enqueue_script(

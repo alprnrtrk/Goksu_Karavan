@@ -38,7 +38,7 @@ foreach (auriel_get_hero_slides() as $raw_slide) {
   );
 }
 ?>
-<section class="relative isolate overflow-hidden bg-surface text-text" data-hero-partial>
+<section class="relative isolate overflow-hidden bg-surface text-text" data-partial="hero" data-hero-partial>
   <div class="mx-auto flex max-w-6xl flex-col gap-8 px-6 py-16 text-center">
     <div class="space-y-4" data-hero-animate>
       <p class="text-sm font-semibold uppercase tracking-[0.3em] text-secondary">

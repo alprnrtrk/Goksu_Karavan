@@ -1,5 +1,7 @@
+import initLenis from './ui-elements/lenis.js';
+
 const initHeroPartial = () => {
-	const heroSections = document.querySelectorAll('[data-hero-partial]');
+	const heroSections = document.querySelectorAll('[data-partial="hero"]');
 
 	if (!heroSections.length) {
 		return;
@@ -18,5 +20,6 @@ const initHeroPartial = () => {
 };
 
 document.addEventListener('DOMContentLoaded', () => {
+	initLenis();
 	initHeroPartial();
 });

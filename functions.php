@@ -9,6 +9,19 @@ if (!defined('AURIEL_THEME_SETTINGS_PAGE_SLUG')) {
   define('AURIEL_THEME_SETTINGS_PAGE_SLUG', 'auriel-theme-settings');
 }
 
+$functions_dir = get_template_directory() . '/inc/functions';
+if (is_dir($functions_dir)) {
+  $function_files = glob(trailingslashit($functions_dir) . '*.php');
+  if (false !== $function_files) {
+    sort($function_files);
+    foreach ($function_files as $function_file) {
+      if (is_file($function_file)) {
+        require_once $function_file;
+      }
+    }
+  }
+}
+
 require_once get_template_directory() . '/inc/vite.php';
 require_once get_template_directory() . '/inc/theme-options.php';
 require_once get_template_directory() . '/inc/partial-fields.php';
