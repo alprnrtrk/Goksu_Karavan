@@ -1,0 +1,38 @@
+how to create a integrated partial
+
+1 - create a backend fields for that partial inside
+
+inc/partials/youre-partial-name.php
+
+the define function for fields definition
+
+auriel_define_partial_fields(
+  'partials/youre-partial-name.php',
+  array(
+    'templates' => auriel_theme_discover_partial_templates('partials/youre-partial-name.php'),
+    'fields' => array(
+      'youre-variable-name' => array(
+        'type' => 'text',
+        'label' => __('Your Variable Name', 'AURIEL_THEME_TEXT_DOMAIN'),
+        'instructions' => __('Instructions for your variable name.', 'AURIEL_THEME_TEXT_DOMAIN'),
+        'default_callback' => 'auriel_your_partial_name_default_value',
+      )
+    )
+  )
+)
+
+2 - collect youre partial fields data with :
+
+$youre_partial_fields = auriel_theme_get_fields(
+  array(
+    'youre-variable-name'
+  )
+)
+
+3 - create a ready to use variable inside the html with
+
+$youre_variable = (string) ($youre_partial_fields['youre_variable'])
+
+4 - and finally you can use it where ever you want with
+
+<?php echo esc_html($youre_variable); ?>
