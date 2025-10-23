@@ -1,0 +1,1 @@
+function register-gsap - parallax - image

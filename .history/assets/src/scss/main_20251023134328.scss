@@ -1,0 +1,19 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color: rgb(var(--auriel-color-text-rgb, 15 23 42));
+  background-color: rgb(var(--auriel-color-surface-rgb, 255 255 255));
+}
+
+body {
+  min-height: 100vh;
+}
+
+.glass-bg {
+  background: rgba(255, 255, 255, 0.03);
+  /* Almost transparent */
+  backdrop-filter: blur(16px) saturate(140%);
+  filter: url(#realistic-glass-lens);
+}
