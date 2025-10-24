@@ -1,6 +1,9 @@
 import gsap from 'gsap';
 import ScrollTrigger from 'gsap/ScrollTrigger';
 
+import { Fancybox } from "@fancyapps/ui";
+import "@fancyapps/ui/dist/fancybox/fancybox.css";
+
 import initLenis from './ui-elements/lenis.js';
 
 import headerFunctions from './partials/header.js';
@@ -56,6 +59,8 @@ function registerHeader() {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+  Fancybox.bind("[data-fancybox]", {});
+
   registerHeader();
   registerLenis();
   registerPartials();

@@ -10,7 +10,7 @@
 <body <?php body_class(); ?>>
   <?php wp_body_open(); ?>
   <header class="group/header fixed z-[999] top-0 left-0 w-full h-[100px]">
-    <a href="<?php echo esc_url(home_url('/')); ?>" class="fixed z-[88] top-0 left-[30px] md:left-[20px] w-[100px] md:scale-[.8] md:origin-top-left p-[15px] pb-[30px] min-md:hover:pt-[30px] border border-white/25 bg-primary/15 rounded-b-full overflow-hidden duration-500">
+    <a href="<?php echo esc_url(home_url('/')); ?>" class="min-md:group-[&.scrolled-down]/header:-translate-y-[150px] fixed z-[88] top-0 left-[30px] md:left-[20px] w-[100px] md:scale-[.8] md:origin-top-left p-[15px] pb-[30px] min-md:hover:pt-[30px] border border-t-0 border-white/25 bg-primary/15 rounded-b-full overflow-hidden duration-500">
       <div class="absolute z-[-1] top-0 left-0 w-full h-full glass-bg">
         <svg width="0" height="0" class="absolute z-[-1]">
           <filter id="realistic-glass-lens" x="0%" y="0%" width="100%" height="100%">
