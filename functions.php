@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-const AURIEL_VITE_MODE = 'dev';
+define('AURIEL_VITE_MODE', 'dev'); // dev veya build
 
 if (!defined('AURIEL_THEME_TEXT_DOMAIN')) {
   define('AURIEL_THEME_TEXT_DOMAIN', 'auriel-theme');
