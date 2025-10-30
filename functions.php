@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-define('AURIEL_VITE_MODE', 'dev'); // dev veya build
+define('AURIEL_VITE_MODE', 'build'); // dev veya build
 
 if (!defined('AURIEL_THEME_TEXT_DOMAIN')) {
   define('AURIEL_THEME_TEXT_DOMAIN', 'auriel-theme');
@@ -15,7 +15,7 @@ $functions_dir = get_template_directory() . '/inc/functions';
 if (is_dir($functions_dir)) {
   $function_files = glob(trailingslashit($functions_dir) . '*.php');
   if (false !== $function_files) {
-    sort($function_files);
+    sort(array: $function_files);
     foreach ($function_files as $function_file) {
       if (is_file($function_file)) {
         require_once $function_file;

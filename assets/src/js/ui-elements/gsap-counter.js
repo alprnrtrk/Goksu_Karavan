@@ -27,7 +27,7 @@ function registerCounter(node) {
             duration: duration,
             ease: "expo.out",
             onUpdate: () => {
-              counter.textContent = Math.floor(obj.val) + suffix;
+              counter.textContent = Math.floor(obj.val) + " " + suffix;
             }
           }
         );

@@ -1,3 +1,0 @@
-function toggleClass(node, target) {
-
-}

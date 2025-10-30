@@ -11,7 +11,7 @@
 <body <?php body_class(); ?>>
   <?php wp_body_open(); ?>
   <header class="group/header fixed z-[999] top-0 left-0 w-full h-[100px]">
-    <a href="<?php echo esc_url(home_url('/')); ?>" class="min-md:group-[&.scrolled-down]/header:-translate-y-[150px] fixed z-[88] top-0 left-[30px] md:left-[20px] w-[100px] md:scale-[.8] md:origin-top-left p-[15px] pb-[30px] min-md:hover:pt-[30px] border border-t-0 border-white/25 bg-primary/15 rounded-b-full overflow-hidden duration-500">
+    <a href="<?php echo esc_url(home_url('/')); ?>" class="min-md:group-[&.scrolled-down]/header:-translate-y-[150px] fixed z-[88] top-0 left-[30px] md:left-[20px] w-[100px] md:scale-[.8] md:origin-top-left min-md:hover:pt-[30px] border border-t-0 border-white/25 bg-primary/15 rounded-b-full overflow-hidden duration-500">
       <div class="absolute z-[-1] top-0 left-0 w-full h-full glass-bg">
         <svg width="0" height="0" class="absolute z-[-1]">
           <filter id="realistic-glass-lens" x="0%" y="0%" width="100%" height="100%">
@@ -30,7 +30,7 @@
           </filter>
         </svg>
       </div>
-      <img class="w-full h-full object-contain object-center invert" src="<?php echo esc_url(auriel_theme_resolve_image_attributes(auriel_theme_get_design_token('brand_logo'))['src']) ?>" alt="<?php echo esc_url(auriel_theme_resolve_image_attributes(auriel_theme_get_design_token('brand_logo'))['alt']) ?>">
+      <img class="w-full h-full object-contain object-center brightness-0 invert" src="<?php echo esc_url(auriel_theme_resolve_image_attributes(auriel_theme_get_design_token('brand_logo'))['src']) ?>" alt="<?php echo esc_url(auriel_theme_resolve_image_attributes(auriel_theme_get_design_token('brand_logo'))['alt']) ?>">
     </a>
     <button data-mobile-toggler class="group/toggle min-md:hidden fixed z-[88] top-[20px] right-[20px] size-[60px] rounded-full border border-white/25 bg-primary/15 overflow-hidden">
       <div class="absolute z-[-1] top-0 left-0 w-full h-full glass-bg">
@@ -52,13 +52,13 @@
         </svg>
       </div>
       <div class="flex flex-col gap-[5px] items-center justify-center group-[&.active]/toggle:translate-y-[-3px]">
-        <span class="-group-[&.active]/toggle:translate-y-[7px] group-[&.active]/toggle:translate-x-[4px] group-[&.active]/toggle:rotate-45 origin-left block w-[30px] h-[2px] bg-white duration-500"></span>
-        <span class="group-[&.active]/toggle:opacity-0 block w-[30px] h-[2px] bg-white duration-500"></span>
-        <span class="group-[&.active]/toggle:translate-y-[7px] group-[&.active]/toggle:translate-x-[4px] group-[&.active]/toggle:-rotate-45 origin-left block w-[30px] h-[2px] bg-white duration-500"></span>
+        <span class="-group-[&.active]/toggle:translate-y-[7px] group-[&.active]/toggle:translate-x-[4px] group-[&.active]/toggle:rotate-45 origin-left block w-[30px] h-[2px] bg-text duration-500"></span>
+        <span class="group-[&.active]/toggle:opacity-0 block w-[30px] h-[2px] bg-text duration-500"></span>
+        <span class="group-[&.active]/toggle:translate-y-[7px] group-[&.active]/toggle:translate-x-[4px] group-[&.active]/toggle:-rotate-45 origin-left block w-[30px] h-[2px] bg-text duration-500"></span>
       </div>
     </button>
     <div data-mobile-menu class="md:[&.active]:translate-x-0 md:translate-x-full md:absolute md:top-0 md:right-0 md:w-full md:h-screen md:flex md:flex-col md:p-[15px] md:bg-primary/15 md:backdrop-blur-3xl duration-500 ease-smooth">
-      <nav class="min-md:group-[&.scrolled-down]/header:-translate-y-[150px] min-md:absolute top-1/2 left-1/2 min-md:-translate-x-1/2 min-md:-translate-y-1/2 p-[15px_10px] md:pt-[120px] min-md:border border-white/25 min-md:bg-primary/15 min-md:rounded-full overflow-hidden [&>.menu]: [&>.menu>ul]:flex md:[&>.menu>ul]:flex-col [&>.menu>ul]:gap-[10px] [&>.menu>ul]:p-[5px_0px] [&>.menu>ul>li>a]:p-[10px_15px] md:[&>.menu>ul>li>a]:p-[10px_0px] min-md:[&>.menu>ul>li>a]:border min-md:[&>.menu>ul>li>a]:rounded-full [&>.menu>ul>li>a]:border-white/25 [&>.menu>ul>li>a]:text-white md:[&>.menu>ul>li>a]:text-3xl [&>.menu>ul>li>a]:font-semibold [&>.menu>ul>li>a]:tracking-widest min-md:[&>.menu>ul>li>a]:backdrop-blur-3xl min-md:[&>.menu>ul>li>a]:backdrop-brightness-[.99] [&>.menu>ul>li>a]:duration-500 [&>.menu>ul>li>a:hover]:bg-primary/50 duration-500">
+      <nav class="min-md:group-[&.scrolled-down]/header:-translate-y-[150px] min-md:absolute top-1/2 left-1/2 min-md:-translate-x-1/2 min-md:-translate-y-1/2 p-[15px_10px] md:pt-[120px] min-md:border border-white/25 min-md:bg-primary/15 min-md:rounded-full overflow-hidden [&]: [&>ul]:flex md:[&>ul]:flex-col [&>ul]:gap-[10px] [&>ul]:p-[5px_0px] [&>ul>li>a]:p-[10px_15px] md:[&>ul>li>a]:p-[10px_0px] min-md:[&>ul>li>a]:border min-md:[&>ul>li>a]:rounded-full [&>ul>li>a]:border-white/25 [&>ul>li>a]:text-white md:[&>ul>li>a]:text-3xl [&>ul>li>a]:font-semibold [&>ul>li>a]:tracking-widest min-md:[&>ul>li>a]:backdrop-blur-3xl min-md:[&>ul>li>a]:backdrop-brightness-[.99] [&>ul>li>a]:duration-500 [&>ul>li>a:hover]:bg-primary/50 duration-500">
         <div class="absolute z-[-1] top-0 left-0 w-full h-full glass-bg">
           <svg width="0" height="0" class="absolute z-[-1]">
             <filter id="realistic-glass-lens" x="0%" y="0%" width="100%" height="100%">
@@ -80,6 +80,10 @@
         <?php
         wp_nav_menu(array(
           'theme_location' => 'primary-menu',
+          'container' => false,
+          'menu_class' => '',
+          'menu_id' => '',
+          'fallback_cb' => false,
         ));
         ?>
       </nav>

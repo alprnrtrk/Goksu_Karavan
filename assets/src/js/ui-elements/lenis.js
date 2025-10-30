@@ -46,6 +46,19 @@ const initLenis = (options = {}) => {
 
   startRaf(lenis);
 
+  // ✅ Smooth scrolling for internal links (#anchors)
+  document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
+    anchor.addEventListener('click', (e) => {
+      const target = anchor.getAttribute('href');
+      if (target.length > 1) {
+        e.preventDefault();
+        lenis.scrollTo(target, {
+          offset: 0, // you can adjust this if you have a sticky header
+        });
+      }
+    });
+  });
+
   lenisInstance = lenis;
   return lenisInstance;
 };

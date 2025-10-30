@@ -1,3 +1,0 @@
-function toggleClass(toggler, toggled) {
-
-}

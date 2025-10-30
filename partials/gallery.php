@@ -8,7 +8,7 @@ $description = $fields['description'];
 $images = $fields['images'];
 
 ?>
-<section data-partial="gallery" class="relative w-screen h-screen md:h-auto bg-surface py-[100px] md:py-[50px]">
+<section id="gallery" data-partial="gallery" class="relative w-screen h-auto bg-surface py-[100px] md:py-[50px]">
   <div class="flex flex-col gap-[30px] items-center">
     <div class="min-md:max-w-[50%] flex flex-col items-center text-center gap-[20px] px-[30px]">
       <span class="relative w-max text-xl font-semibold before:absolute before:top-1/2 before:-translate-y-1/2 before:-left-[15px] before:-translate-x-full before:w-[50px] before:h-[2px] before:rounded-full before:bg-primary after:absolute after:top-1/2 after:-translate-y-1/2 after:-right-[15px] after:translate-x-full after:w-[50px] after:h-[2px] after:rounded-full after:bg-primary">Galeri</span>
@@ -19,7 +19,6 @@ $images = $fields['images'];
     </div>
     <div data-swiper="wrapper" class="swiper w-full h-auto">
       <div class="absolute pointer-events-none z-[20] top-0 left-0 w-full h-full flex items-center justify-between px-[200px] md:px-[30px]">
-        <span class="block absolute z-[-1] top-0 left-0 w-full h-full bg-gradient-to-r from-surface via-transparent to-surface md:hidden"></span>
         <span class="block absolute top-0 left-0 w-full h-[20px] md:h-[30px] rounded-b-[100%] bg-surface min-md:scale-y-[3] origin-top"></span>
         <span class="block absolute bottom-0 left-0 w-full h-[20px] md:h-[30px] rounded-t-[100%] bg-surface min-md:scale-y-[3] origin-bottom"></span>
         <button data-swiper="prev" class="relative pointer-events-auto z-[10] size-[100px] md:size-[70px] flex items-center justify-center text-white text-3xl md:text-xl bg-primary/5 border border-white/25 rounded-full overflow-hidden min-md:hover:-translate-x-[10px] duration-500">
