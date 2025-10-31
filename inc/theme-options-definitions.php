@@ -74,6 +74,26 @@ function auriel_theme_get_design_token_fields(): array
       'default' => '#0f172a',
       'instructions' => __('Primary body text colour to maintain readability.', AURIEL_THEME_TEXT_DOMAIN),
     ],
+    [
+      'name' => 'footer_description',
+      'label' => __('Sayfa Altı Açıklaması', AURIEL_THEME_TEXT_DOMAIN),
+      'type' => 'textarea',
+    ],
+    [
+      'name' => 'footer_phone',
+      'label' => __('Sayfa Altı Telefon', AURIEL_THEME_TEXT_DOMAIN),
+      'type' => 'textarea',
+    ],
+    [
+      'name' => 'footer_mail',
+      'label' => __('Sayfa Altı Mail', AURIEL_THEME_TEXT_DOMAIN),
+      'type' => 'textarea',
+    ],
+    [
+      'name' => 'footer_adress',
+      'label' => __('Sayfa Altı Adres', AURIEL_THEME_TEXT_DOMAIN),
+      'type' => 'textarea',
+    ],
   ];
 
   return apply_filters('auriel_theme_design_token_fields', $fields);

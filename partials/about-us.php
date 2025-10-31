@@ -67,7 +67,7 @@ $imageTwo = $fields['about-us-image-two'];
         </p>
       </div>
       <div class="md:hidden w-full min-h-[400px] md:min-h-[200px] border border-text/25 rounded-[20px] overflow-hidden">
-        <img data-gsap-parallax-image="image" data-gsap-parallax-image-power="-.1" class="w-full h-full object-cover scale-[1.5] object-center" src="<?php echo esc_url(auriel_theme_resolve_image_attributes($imageOne)['src']) ?>" alt="<?php echo esc_url(auriel_theme_resolve_image_attributes($imageOne)['alt']) ?>">
+        <img data-gsap-parallax-image="image" data-gsap-parallax-image-power="-.1" class="w-full h-full object-cover scale-[1.5] object-center" src="<?php echo esc_url(auriel_theme_resolve_image_attributes($imageTwo)['src']) ?>" alt="<?php echo esc_url(auriel_theme_resolve_image_attributes($imageTwo)['alt']) ?>">
       </div>
     </div>
   </div>

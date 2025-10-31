@@ -66,19 +66,19 @@ $images = $fields['images'];
       </div>
       <div class="swiper-wrapper">
         <?php foreach ($images as $image): ?>
-          <div class="swiper-slide group/slide">
+          <div class="swiper-slide group/slide !h-full">
             <a href="<?php echo esc_url(auriel_theme_resolve_image_attributes($image['images'])['src']) ?>" data-fancybox="gallery" class="md:hidden opacity-0 pointer-events-none group-[&.swiper-slide-active:hover]/slide:pointer-events-auto group-[&.swiper-slide-active:hover]/slide:opacity-100 absolute top-0 left-0 w-full h-full flex items-center justify-center text-5xl text-white bg-black/25 backdrop-blur-sm duration-500">
               <i class="fa-solid fa-magnifying-glass-plus"></i>
             </a>
-            <img class="w-full min-h-[500px] object-cover object-center" src="<?php echo esc_url(auriel_theme_resolve_image_attributes($image['images'])['src']) ?>" alt="">
+            <img class="w-full h-[700px] object-cover object-center" src="<?php echo esc_url(auriel_theme_resolve_image_attributes($image['images'])['src']) ?>" alt="">
           </div>
         <?php endforeach; ?>
         <?php foreach ($images as $image): ?>
-          <div class="swiper-slide group/slide">
+          <div class="swiper-slide group/slide !h-full">
             <a href="<?php echo esc_url(auriel_theme_resolve_image_attributes($image['images'])['src']) ?>" data-fancybox="gallery" class="md:hidden opacity-0 pointer-events-none group-[&.swiper-slide-active:hover]/slide:pointer-events-auto group-[&.swiper-slide-active:hover]/slide:opacity-100 absolute top-0 left-0 w-full h-full flex items-center justify-center text-5xl text-white bg-black/25 backdrop-blur-sm duration-500">
               <i class="fa-solid fa-magnifying-glass-plus"></i>
             </a>
-            <img class="w-full min-h-[500px] object-cover object-center" src="<?php echo esc_url(auriel_theme_resolve_image_attributes($image['images'])['src']) ?>" alt="">
+            <img class="w-full h-[700px] object-cover object-center" src="<?php echo esc_url(auriel_theme_resolve_image_attributes($image['images'])['src']) ?>" alt="">
           </div>
         <?php endforeach; ?>
       </div>
