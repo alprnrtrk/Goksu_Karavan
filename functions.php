@@ -117,37 +117,6 @@ function auriel_theme_render_menu(string $location, array $args = array()): void
 }
 
 /**
- * Templates that should hide the default content editor.
- *
- * @return array<int, string>
- */
-function auriel_theme_editorless_templates(): array
-{
-  return array(
-    'templates/page-home.php',
-    'templates/page-about.php',
-    'templates/page-contact.php',
-  );
-}
-
-/**
- * Determine whether the editor should be disabled for a given post.
- */
-function auriel_theme_should_disable_editor(int $post_id): bool
-{
-  if ($post_id <= 0) {
-    return false;
-  }
-
-  $template = get_page_template_slug($post_id);
-  if ('' === $template) {
-    $template = get_post_meta($post_id, '_wp_page_template', true);
-  }
-
-  return in_array($template, auriel_theme_editorless_templates(), true);
-}
-
-/**
  * Disable the block editor for selected templates.
  *
  * @param bool     $use_block_editor Whether Gutenberg should load.
@@ -155,32 +124,32 @@ function auriel_theme_should_disable_editor(int $post_id): bool
  */
 function auriel_theme_filter_block_editor($use_block_editor, $post)
 {
-  if ($post instanceof WP_Post && 'page' === $post->post_type && auriel_theme_should_disable_editor((int) $post->ID)) {
+  if ($post instanceof WP_Post && 'page' === $post->post_type) {
     return false;
   }
 
   return $use_block_editor;
 }
 add_filter('use_block_editor_for_post', 'auriel_theme_filter_block_editor', 10, 2);
+add_filter('use_block_editor_for_post_type', static function ($use_block_editor, string $post_type) {
+  return 'page' === $post_type ? false : $use_block_editor;
+}, 10, 2);
 
 /**
  * Remove the classic editor when a template does not use content.
  */
 function auriel_theme_maybe_remove_classic_editor(): void
 {
-  $post_id = isset($_GET['post']) ? (int) $_GET['post'] : 0;
-  if (0 === $post_id && isset($_POST['post_ID'])) {
-    $post_id = (int) $_POST['post_ID'];
-  }
-
-  if ($post_id > 0 && auriel_theme_should_disable_editor($post_id)) {
-    remove_post_type_support('page', 'editor');
-  } else {
-    add_post_type_support('page', 'editor');
-  }
+  remove_post_type_support('page', 'editor');
 }
 add_action('load-post.php', 'auriel_theme_maybe_remove_classic_editor');
 add_action('load-post-new.php', 'auriel_theme_maybe_remove_classic_editor');
+
+function auriel_theme_disable_editor_everywhere(): void
+{
+  remove_post_type_support('page', 'editor');
+}
+add_action('admin_init', 'auriel_theme_disable_editor_everywhere');
 
 
 function auriel_enqueue_fontawesome_cdn()
@@ -194,3 +163,4 @@ function auriel_enqueue_fontawesome_cdn()
   );
 }
 add_action('wp_enqueue_scripts', 'auriel_enqueue_fontawesome_cdn');
+
