@@ -8,8 +8,8 @@ $description = $fields['about-sliding-description'];
 $services = $fields['about-sliding-services'];
 $images = $fields['about-sliding-cards'];
 ?>
-<section id="about-sliding" data-partial="about-sliding" class="relative w-screen h-screen bg-black">
-  <div class="absolute z-[99] top-1/2 -translate-y-1/2 left-0 w-full h-auto md:h-full flex justify-center p-[100px_30px] md:p-[30px]">
+<section id="about-sliding" data-partial="about-sliding" class="relative w-screen h-screen md:h-max bg-black">
+  <div class="absolute md:relative z-[99] min-md:top-1/2 min-md:-translate-y-1/2 left-0 w-full h-auto md:h-max flex justify-center p-[100px_30px] md:p-[30px]">
     <div class="relative w-1/2 md:w-full h-full flex flex-col gap-[20px] p-[40px_20px] md:p-[30px] bg-secondary/20 rounded-[30px] border border-white/25 overflow-hidden">
       <div class="absolute z-[-1] top-0 left-0 w-full h-full glass-bg-strong">
         <svg width="0" height="0" class="absolute z-[-1]">
@@ -36,7 +36,7 @@ $images = $fields['about-sliding-cards'];
       </div>
       <ul class="grid grid-cols-2 md:flex md:flex-col gap-[10px]">
         <?php foreach ($services as $service): ?>
-          <li class="flex items-center gap-[10px] p-[20px] md:p-[10px] bg-primary/10 rounded-[20px] border border-white/25 backdrop-blur-xl">
+          <li class="flex md:flex-col md:text-center items-center gap-[10px] p-[20px] md:p-[10px] bg-primary/10 rounded-[20px] border border-white/25 backdrop-blur-xl">
             <span class="!min-w-[50px] !min-h-[50px] md:!min-w-[40px] md:!min-h-[40px] flex items-center justify-center rounded-full border border-primary bg-white text-primary text-xl">
               <i class="<?php echo $service['icon'] ?>"></i>
             </span>
@@ -52,7 +52,7 @@ $images = $fields['about-sliding-cards'];
   <?php
   if (!empty($images) && is_array($images)):
     foreach ($images as $item): ?>
-      <div data-gsap-sticky-panel class="absolute inset-0 w-full h-screen bg-cover bg-center will-change-transform" style="background-image: url('<?php echo esc_url($img_url); ?>');">
+      <div data-gsap-sticky-panel class="absolute inset-0 w-full h-screen md:h-full bg-cover bg-center will-change-transform" style="background-image: url('<?php echo esc_url($img_url); ?>');">
         <img class="absolute top-0 left-0 w-full h-full object-cover object-center" src="<?php echo esc_url(auriel_theme_resolve_image_attributes($item['bacground-image'])['src']) ?>" alt="">
       </div>
     <?php endforeach;

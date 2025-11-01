@@ -14,7 +14,7 @@ $right = $fields['right-area'];
 <section id="caravan" data-partial="caravan" class="relative w-screen h-auto py-[100px] md:py-[50px]">
   <div class="flex flex-col items-center gap-[50px]">
     <div class="min-md:max-w-[50%] flex flex-col items-center text-center gap-[20px] px-[30px]">
-      <span class="relative w-max text-xl font-semibold before:absolute before:top-1/2 before:-translate-y-1/2 before:-left-[15px] before:-translate-x-full before:w-[50px] before:h-[2px] before:rounded-full before:bg-primary after:absolute after:top-1/2 after:-translate-y-1/2 after:-right-[15px] after:translate-x-full after:w-[50px] after:h-[2px] after:rounded-full after:bg-primary">Karavan Detaylarımız</span>
+      <span class="relative w-max text-xl font-semibold before:absolute before:top-1/2 before:-translate-y-1/2 before:-left-[15px] before:-translate-x-full before:w-[50px] before:h-[2px] before:rounded-full before:bg-primary after:absolute after:top-1/2 after:-translate-y-1/2 after:-right-[15px] after:translate-x-full after:w-[50px] after:h-[2px] after:rounded-full after:bg-primary">Lux Paket Karavan Detaylarımız</span>
       <h2 class="text-3xl"><?php echo $heading ?></h2>
       <p>
         <?php echo $description ?>

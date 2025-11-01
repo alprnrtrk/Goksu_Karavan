@@ -5,7 +5,7 @@ $footerMail = auriel_theme_get_design_token('footer_mail');
 $footerAdres = auriel_theme_get_design_token('footer_adress');
 ?>
 
-<footer class="relative flex flex-col gap-[15px] w-full px-[150px] py-[50px]">
+<footer class="relative flex flex-col gap-[15px] w-full px-[150px] md:px-[30px] py-[50px]">
   <div class="flex md:flex-col justify-between md:items-center gap-[10px] p-[30px] min-md:pr-[100px] rounded-[20px] border border-text/25">
     <div class="flex items-start gap-[15px]">
       <div class="flex flex-col gap-[15px]">
