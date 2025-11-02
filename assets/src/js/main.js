@@ -7,6 +7,7 @@ import "@fancyapps/ui/dist/fancybox/fancybox.css";
 import initLenis from './ui-elements/lenis.js';
 
 import headerFunctions from './partials/header.js';
+import { initGsapToggle } from './ui-elements/gsap-toggle.js';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -64,4 +65,5 @@ document.addEventListener('DOMContentLoaded', () => {
   registerHeader();
   registerLenis();
   registerPartials();
+  initGsapToggle();
 });
