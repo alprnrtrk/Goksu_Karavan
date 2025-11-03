@@ -42,6 +42,54 @@
   gap: 0.75rem;
 }
 
+.auriel-partials-gallery {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.auriel-partials-gallery-list {
+  display: grid;
+  gap: 0.75rem;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+}
+
+.auriel-partials-gallery-item {
+  display: grid;
+  gap: 0.5rem;
+  padding: 0.75rem;
+  border: 1px solid #dadada;
+  background: #fafafa;
+  border-radius: 8px;
+}
+
+.auriel-partials-gallery-thumb {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 120px;
+  background: #f5f5f5;
+  border: 1px dashed #c1c1c1;
+  padding: 0.75rem;
+}
+
+.auriel-partials-gallery-thumb-img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+.auriel-partials-gallery-item-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.auriel-partials-gallery-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
 .auriel-partials-repeater {
   display: grid;
   gap: 1rem;

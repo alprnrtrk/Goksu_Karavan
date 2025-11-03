@@ -179,6 +179,11 @@ function auriel_partials_render_field(string $slug, string $field_key, array $fi
       echo '</div>';
       break;
 
+    case 'gallery':
+      $image_ids = auriel_partials_normalize_gallery_value($value);
+      auriel_partials_render_gallery_control($name, $id, $image_ids);
+      break;
+
     case 'editor':
       $content = is_string($value) ? $value : '';
       wp_editor(
@@ -228,6 +233,93 @@ function auriel_partials_render_field(string $slug, string $field_key, array $fi
     echo '<p class="description">' . esc_html($instructions) . '</p>';
   }
 
+  echo '</div>';
+}
+
+/**
+ * @param mixed $value
+ * @return array<int>
+ */
+function auriel_partials_normalize_gallery_value($value): array
+{
+  if (is_array($value)) {
+    $source = $value;
+  } elseif (is_string($value)) {
+    $source = array_filter(array_map('trim', explode(',', $value)));
+  } else {
+    $source = array();
+  }
+
+  $ids = array();
+
+  foreach ($source as $maybe_id) {
+    $id = (int) $maybe_id;
+    if ($id <= 0) {
+      continue;
+    }
+    if (in_array($id, $ids, true)) {
+      continue;
+    }
+    $ids[] = $id;
+  }
+
+  return $ids;
+}
+
+/**
+ * @param array<int> $image_ids
+ */
+function auriel_partials_render_gallery_control(string $input_name, string $input_id, array $image_ids): void
+{
+  $image_ids = array_values(array_filter(array_map('intval', $image_ids)));
+
+  echo '<div class="auriel-partials-gallery" data-partial-gallery>';
+
+  $attributes = '';
+  if ('' !== $input_id) {
+    $attributes = ' id="' . esc_attr($input_id) . '"';
+  }
+
+  echo '<input type="hidden"' . $attributes . ' name="' . esc_attr($input_name) . '" value="' . esc_attr(implode(',', $image_ids)) . '" data-gallery-input />';
+  echo '<div class="auriel-partials-gallery-list" data-gallery-list>';
+
+  foreach ($image_ids as $image_id) {
+    $thumb_src = wp_get_attachment_image_url($image_id, 'thumbnail');
+    $thumb_src = is_string($thumb_src) ? $thumb_src : '';
+
+    $alt_text = trim((string) get_post_meta($image_id, '_wp_attachment_image_alt', true));
+    if ('' === $alt_text) {
+      $alt_text = get_the_title($image_id);
+    }
+    $alt_text = is_string($alt_text) ? $alt_text : '';
+
+    echo '<div class="auriel-partials-gallery-item" data-gallery-item="1" data-image-id="' . esc_attr((string) $image_id) . '"';
+    if ('' !== $thumb_src) {
+      echo ' data-thumb-src="' . esc_url($thumb_src) . '"';
+    }
+    if ('' !== $alt_text) {
+      echo ' data-thumb-alt="' . esc_attr($alt_text) . '"';
+    }
+    echo '>';
+    echo '<div class="auriel-partials-gallery-thumb">';
+    if ('' !== $thumb_src) {
+      echo '<img src="' . esc_url($thumb_src) . '" alt="' . esc_attr($alt_text) . '" class="auriel-partials-gallery-thumb-img" />';
+    }
+    echo '</div>';
+    echo '<div class="auriel-partials-gallery-item-actions">';
+    echo '<button type="button" class="button button-small" data-gallery-move-up>' . esc_html__('Move up', AURIEL_THEME_TEXT_DOMAIN) . '</button>';
+    echo '<button type="button" class="button button-small" data-gallery-move-down>' . esc_html__('Move down', AURIEL_THEME_TEXT_DOMAIN) . '</button>';
+    echo '<button type="button" class="button button-link-delete" data-gallery-remove>' . esc_html__('Remove', AURIEL_THEME_TEXT_DOMAIN) . '</button>';
+    echo '</div>';
+    echo '</div>';
+  }
+
+  echo '</div>';
+  echo '<div class="auriel-partials-gallery-actions">';
+  echo '<button type="button" class="button" data-gallery-select>' . esc_html__('Manage images', AURIEL_THEME_TEXT_DOMAIN) . '</button>';
+  echo '<button type="button" class="button" data-gallery-add>' . esc_html__('Add images', AURIEL_THEME_TEXT_DOMAIN) . '</button>';
+  echo '<button type="button" class="button button-link-delete" data-gallery-clear>' . esc_html__('Clear gallery', AURIEL_THEME_TEXT_DOMAIN) . '</button>';
+  echo '</div>';
   echo '</div>';
 }
 
@@ -299,6 +391,11 @@ function auriel_partials_render_repeater_field(string $slug, string $field_key, 
       echo '<button type="button" class="button button-link-delete" data-image-remove>' . esc_html__('Remove image', AURIEL_THEME_TEXT_DOMAIN) . '</button>';
       echo '</div>';
       echo '</div>';
+      break;
+
+    case 'gallery':
+      $gallery_ids = auriel_partials_normalize_gallery_value($value);
+      auriel_partials_render_gallery_control($name, '', $gallery_ids);
       break;
 
     default:
@@ -514,7 +611,17 @@ function auriel_partials_handle_save(int $post_id): void
 
       $sanitized = auriel_partials_sanitize_field_value($type, $raw_value);
 
-      if ('' === $sanitized || (is_numeric($sanitized) && 0 === (int) $sanitized)) {
+      $should_delete = false;
+
+      if (is_string($sanitized)) {
+        $should_delete = '' === $sanitized;
+      } elseif (is_numeric($sanitized)) {
+        $should_delete = 0 === (int) $sanitized;
+      } elseif (is_array($sanitized)) {
+        $should_delete = empty($sanitized);
+      }
+
+      if ($should_delete) {
         delete_post_meta($post_id, $meta_key);
         continue;
       }
@@ -586,6 +693,9 @@ function auriel_partials_sanitize_field_value(string $type, $value)
     case 'image':
       return max(0, (int) $value);
 
+    case 'gallery':
+      return auriel_partials_normalize_gallery_value($value);
+
     case 'editor':
       return wp_kses_post((string) ($value ?? ''));
 
@@ -624,6 +734,11 @@ function auriel_partials_get_fields(string $slug, int $post_id = 0): array
 
     if ('repeater' === $type) {
       $values[$field_key] = is_array($stored) ? $stored : array();
+      continue;
+    }
+
+    if ('gallery' === $type) {
+      $values[$field_key] = auriel_partials_normalize_gallery_value($stored);
       continue;
     }
 
