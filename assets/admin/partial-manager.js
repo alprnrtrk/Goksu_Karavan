@@ -7,6 +7,24 @@
     }
   };
 
+  const escapeHtml = (value) =>
+    String(value || '').replace(/[&<>"']/g, (character) => {
+      switch (character) {
+        case '&':
+          return '&amp;';
+        case '<':
+          return '&lt;';
+        case '>':
+          return '&gt;';
+        case '"':
+          return '&quot;';
+        case "'":
+          return '&#039;';
+        default:
+          return character;
+      }
+    });
+
   const initImageField = (wrapper) => {
     const selectButton = wrapper.querySelector('[data-image-select]');
     const removeButton = wrapper.querySelector('[data-image-remove]');
@@ -67,6 +85,216 @@
       hiddenInput.value = '';
       preview.innerHTML = '';
     });
+  };
+
+  const parseMediaValue = (value) => {
+    if (!value) {
+      return null;
+    }
+
+    if (typeof value === 'object' && value !== null) {
+      return value;
+    }
+
+    try {
+      const parsed = JSON.parse(value);
+      if (parsed && parsed.id && parsed.type) {
+        const id = parseInt(parsed.id, 10);
+        if (Number.isNaN(id) || id <= 0) {
+          return null;
+        }
+        if (parsed.type !== 'image' && parsed.type !== 'video') {
+          return null;
+        }
+        return { id, type: parsed.type };
+      }
+    } catch (error) {
+      // Ignore JSON parse errors.
+    }
+
+    const numericValue = parseInt(value, 10);
+    if (!Number.isNaN(numericValue) && numericValue > 0) {
+      return { id: numericValue, type: '' };
+    }
+
+    return null;
+  };
+
+  const resolveMediaType = (type, mime) => {
+    if (type === 'image' || type === 'video') {
+      return type;
+    }
+
+    if (mime && typeof mime === 'string') {
+      if (mime.indexOf('image/') === 0) {
+        return 'image';
+      }
+
+      if (mime.indexOf('video/') === 0) {
+        return 'video';
+      }
+    }
+
+    return '';
+  };
+
+  const createMediaPreviewHtml = (attachmentData, media, labels) => {
+    if (!media || !attachmentData) {
+      return '';
+    }
+
+    if (media.type === 'image') {
+      const sizes = attachmentData.sizes || {};
+      const preferred =
+        (sizes.medium && sizes.medium.url) ||
+        (sizes.large && sizes.large.url) ||
+        (sizes.full && sizes.full.url) ||
+        (sizes.thumbnail && sizes.thumbnail.url) ||
+        attachmentData.url ||
+        '';
+      const alt = attachmentData.alt || attachmentData.title || '';
+      if (!preferred) {
+        return '';
+      }
+      return `<img src="${escapeHtml(preferred)}" alt="${escapeHtml(alt)}" class="auriel-partials-media-preview-image" />`;
+    }
+
+    if (media.type === 'video') {
+      const poster =
+        (attachmentData.image && attachmentData.image.src) ||
+        attachmentData.icon ||
+        (attachmentData.sizes &&
+          attachmentData.sizes.thumbnail &&
+          attachmentData.sizes.thumbnail.url) ||
+        '';
+
+      if (poster) {
+        return `<img src="${escapeHtml(poster)}" alt="" class="auriel-partials-media-preview-video-thumb" />`;
+      }
+
+      const fallback =
+        attachmentData.filename ||
+        attachmentData.title ||
+        labels.videoFallback ||
+        'Video selected';
+      return `<div class="auriel-partials-media-placeholder auriel-partials-media-placeholder--video">${escapeHtml(fallback)}</div>`;
+    }
+
+    return '';
+  };
+
+  const buildMediaMetaLabel = (media, attachmentData, labels) => {
+    if (!media) {
+      return '';
+    }
+
+    const baseLabel =
+      media.type === 'video'
+        ? labels.video || 'Video'
+        : labels.image || 'Image';
+    const details =
+      (attachmentData && (attachmentData.title || attachmentData.filename)) || '';
+
+    return details ? `${baseLabel}: ${details}` : baseLabel;
+  };
+
+  const initMediaField = (wrapper) => {
+    const selectButton = wrapper.querySelector('[data-media-select]');
+    const removeButton = wrapper.querySelector('[data-media-remove]');
+    const hiddenInput = wrapper.querySelector('[data-media-input]');
+    const preview = wrapper.querySelector('[data-media-preview]');
+    const meta = wrapper.querySelector('[data-media-meta]');
+
+    if (!selectButton || !removeButton || !hiddenInput || !preview) {
+      return;
+    }
+
+    const labels = {
+      placeholder:
+        wrapper.getAttribute('data-media-placeholder') || 'No media selected',
+      image: wrapper.getAttribute('data-media-image-label') || 'Image',
+      video: wrapper.getAttribute('data-media-video-label') || 'Video',
+      videoFallback:
+        wrapper.getAttribute('data-media-video-fallback') || 'Video selected',
+    };
+
+    const emptyPreviewMarkup = `<div class="auriel-partials-media-placeholder">${escapeHtml(
+      labels.placeholder
+    )}</div>`;
+
+    let frame = null;
+
+    const clearSelection = () => {
+      hiddenInput.value = '';
+      preview.innerHTML = emptyPreviewMarkup;
+      if (meta) {
+        meta.textContent = '';
+      }
+    };
+
+    removeButton.addEventListener('click', (event) => {
+      event.preventDefault();
+      clearSelection();
+    });
+
+    selectButton.addEventListener('click', (event) => {
+      event.preventDefault();
+
+      if (typeof wp === 'undefined' || !wp.media) {
+        return;
+      }
+
+      if (!frame) {
+        frame = wp.media({
+          title: selectButton.textContent || 'Select media',
+          button: {
+            text: selectButton.textContent || 'Select',
+          },
+          multiple: false,
+          library: {
+            type: ['image', 'video'],
+          },
+        });
+
+        frame.on('select', () => {
+          const attachment = frame.state().get('selection').first();
+          if (!attachment) {
+            return;
+          }
+
+          const data = attachment.toJSON();
+          const mediaType = resolveMediaType(data.type, data.mime || data.mime_type);
+          const id = parseInt(data.id || data.ID, 10);
+
+          if (!mediaType || Number.isNaN(id) || id <= 0) {
+            return;
+          }
+
+          const mediaValue = {
+            id,
+            type: mediaType,
+          };
+
+          hiddenInput.value = JSON.stringify(mediaValue);
+
+          const previewMarkup =
+            createMediaPreviewHtml(data, mediaValue, labels) ||
+            emptyPreviewMarkup;
+          preview.innerHTML = previewMarkup;
+
+          if (meta) {
+            meta.textContent = buildMediaMetaLabel(mediaValue, data, labels);
+          }
+        });
+      }
+
+      frame.open();
+    });
+
+    const initialValue = parseMediaValue(hiddenInput.value);
+    if (!initialValue || !initialValue.type) {
+      clearSelection();
+    }
   };
 
   const initGalleryField = (wrapper) => {
@@ -366,6 +594,7 @@
       const item = createItem(nextIndex);
       if (item) {
         itemsWrapper.appendChild(item);
+        item.querySelectorAll('[data-partial-media]').forEach(initMediaField);
         item.querySelectorAll('[data-partial-image]').forEach(initImageField);
         item.querySelectorAll('[data-partial-gallery]').forEach(initGalleryField);
         normaliseFieldNames();
@@ -393,6 +622,10 @@
   };
 
   const initPartialMeta = (container) => {
+    container.querySelectorAll('[data-partial-media]').forEach((wrapper) => {
+      initMediaField(wrapper);
+    });
+
     container.querySelectorAll('[data-partial-image]').forEach((wrapper) => {
       initImageField(wrapper);
     });
