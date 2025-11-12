@@ -163,6 +163,32 @@ function auriel_partials_render_field(string $slug, string $field_key, array $fi
       echo '<input type="url" class="widefat auriel-partials-input" id="' . esc_attr($id) . '" name="' . esc_attr($name) . '" value="' . esc_attr(is_string($value) ? $value : '') . '" />';
       break;
 
+    case 'media':
+      $media_value = auriel_partials_normalize_media_value($value);
+      $encoded_value = auriel_partials_encode_media_value($media_value);
+      $media_placeholder_text = __('No media selected', AURIEL_THEME_TEXT_DOMAIN);
+      $media_image_label_text = __('Image', AURIEL_THEME_TEXT_DOMAIN);
+      $media_video_label_text = __('Video', AURIEL_THEME_TEXT_DOMAIN);
+      $media_video_fallback_text = __('Video selected', AURIEL_THEME_TEXT_DOMAIN);
+      $meta_label = '';
+      if (!empty($media_value)) {
+        $label_prefix = 'image' === ($media_value['type'] ?? '')
+          ? $media_image_label_text
+          : $media_video_label_text;
+        $title = isset($media_value['title']) ? (string) $media_value['title'] : '';
+        $meta_label = '' !== $title ? $label_prefix . ': ' . $title : $label_prefix;
+      }
+      echo '<div class="auriel-partials-media" data-partial-media data-media-placeholder="' . esc_attr($media_placeholder_text) . '" data-media-image-label="' . esc_attr($media_image_label_text) . '" data-media-video-label="' . esc_attr($media_video_label_text) . '" data-media-video-fallback="' . esc_attr($media_video_fallback_text) . '">';
+      echo '<input type="hidden" id="' . esc_attr($id) . '" name="' . esc_attr($name) . '" value="' . esc_attr($encoded_value) . '" data-media-input />';
+      echo '<div class="auriel-partials-media-preview" data-media-preview>' . wp_kses_post(auriel_partials_media_preview_markup($media_value)) . '</div>';
+      echo '<div class="auriel-partials-media-actions">';
+      echo '<button type="button" class="button" data-media-select>' . esc_html__('Select media', AURIEL_THEME_TEXT_DOMAIN) . '</button>';
+      echo '<button type="button" class="button button-link-delete" data-media-remove>' . esc_html__('Remove media', AURIEL_THEME_TEXT_DOMAIN) . '</button>';
+      echo '</div>';
+      echo '<p class="description auriel-partials-media-meta" data-media-meta>' . esc_html($meta_label) . '</p>';
+      echo '</div>';
+      break;
+
     case 'image':
       $image_id = (int) $value;
       $preview = '';
@@ -324,6 +350,154 @@ function auriel_partials_render_gallery_control(string $input_name, string $inpu
 }
 
 /**
+ * Normalize the stored value for a media field to a rich associative array.
+ *
+ * @param mixed $value
+ * @return array<string, mixed>
+ */
+function auriel_partials_normalize_media_value($value): array
+{
+  if (is_string($value)) {
+    if (function_exists('wp_unslash')) {
+      $value = wp_unslash($value);
+    }
+    $decoded = json_decode($value, true);
+    if (is_array($decoded)) {
+      $value = $decoded;
+    } elseif ('' !== trim($value)) {
+      $value = array('id' => (int) $value);
+    }
+  }
+
+  if (!is_array($value)) {
+    return array();
+  }
+
+  $attachment_id = isset($value['id']) ? (int) $value['id'] : 0;
+  if ($attachment_id <= 0) {
+    return array();
+  }
+
+  $attachment = get_post($attachment_id);
+  if (!$attachment instanceof WP_Post || 'attachment' !== $attachment->post_type) {
+    return array();
+  }
+
+  $mime_type = get_post_mime_type($attachment_id);
+  $mime_type = is_string($mime_type) ? $mime_type : '';
+
+  $type = isset($value['type']) ? (string) $value['type'] : '';
+  if ('' === $type) {
+    if (wp_attachment_is_image($attachment_id)) {
+      $type = 'image';
+    } elseif (0 === strpos($mime_type, 'video/')) {
+      $type = 'video';
+    }
+  }
+
+  if ('image' !== $type && 'video' !== $type) {
+    return array();
+  }
+
+  $url = wp_get_attachment_url($attachment_id);
+  $url = is_string($url) ? $url : '';
+
+  $thumbnail = '';
+  if ('image' === $type) {
+    $thumbnail = wp_get_attachment_image_url($attachment_id, 'medium');
+    if (!is_string($thumbnail) || '' === $thumbnail) {
+      $thumbnail = wp_get_attachment_image_url($attachment_id, 'thumbnail');
+    }
+  } else {
+    $thumbnail = get_the_post_thumbnail_url($attachment_id, 'medium');
+    if (!is_string($thumbnail) || '' === $thumbnail) {
+      $icon = wp_mime_type_icon($attachment_id);
+      $thumbnail = is_string($icon) ? $icon : '';
+    }
+  }
+
+  $title = get_the_title($attachment_id);
+  $title = is_string($title) ? $title : '';
+
+  return array(
+    'id' => $attachment_id,
+    'type' => $type,
+    'mime_type' => $mime_type,
+    'title' => $title,
+    'url' => $url,
+    'thumbnail_url' => is_string($thumbnail) ? $thumbnail : '',
+  );
+}
+
+/**
+ * Reduce a normalized media value to the subset of data we persist.
+ *
+ * @param array<string, mixed> $media
+ * @return array<string, mixed>
+ */
+function auriel_partials_compact_media_value(array $media): array
+{
+  if (empty($media) || empty($media['id']) || empty($media['type'])) {
+    return array();
+  }
+
+  return array(
+    'id' => (int) $media['id'],
+    'type' => (string) $media['type'],
+  );
+}
+
+/**
+ * @param array<string, mixed> $media
+ */
+function auriel_partials_media_preview_markup(array $media): string
+{
+  if (empty($media)) {
+    return '<div class="auriel-partials-media-placeholder">' . esc_html__('No media selected', AURIEL_THEME_TEXT_DOMAIN) . '</div>';
+  }
+
+  if ('image' === ($media['type'] ?? '')) {
+    $attachment_id = (int) ($media['id'] ?? 0);
+    if ($attachment_id > 0) {
+      $image = wp_get_attachment_image(
+        $attachment_id,
+        'medium',
+        false,
+        array('class' => 'auriel-partials-media-preview-image')
+      );
+      if (!empty($image)) {
+        return $image;
+      }
+    }
+  }
+
+  if ('video' === ($media['type'] ?? '')) {
+    $thumbnail = isset($media['thumbnail_url']) ? (string) $media['thumbnail_url'] : '';
+    if ('' !== $thumbnail) {
+      return '<img src="' . esc_url($thumbnail) . '" alt="" class="auriel-partials-media-preview-video-thumb" />';
+    }
+
+    $title = isset($media['title']) ? (string) $media['title'] : __('Selected video', AURIEL_THEME_TEXT_DOMAIN);
+    return '<div class="auriel-partials-media-placeholder auriel-partials-media-placeholder--video">' . esc_html($title) . '</div>';
+  }
+
+  return '<div class="auriel-partials-media-placeholder">' . esc_html__('Unsupported media selection', AURIEL_THEME_TEXT_DOMAIN) . '</div>';
+}
+
+/**
+ * @param array<string, mixed> $media
+ */
+function auriel_partials_encode_media_value(array $media): string
+{
+  $compact = auriel_partials_compact_media_value($media);
+  if (empty($compact)) {
+    return '';
+  }
+
+  return (string) wp_json_encode($compact);
+}
+
+/**
  * @param array<string, array<string, mixed>> $fields
  * @param array<string, mixed>                $values
  */
@@ -375,6 +549,33 @@ function auriel_partials_render_repeater_field(string $slug, string $field_key, 
 
     case 'url':
       echo '<input type="url" class="widefat auriel-partials-input" name="' . esc_attr($name) . '" value="' . esc_attr(is_string($value) ? $value : '') . '" />';
+      break;
+
+    case 'media':
+      $media_value = auriel_partials_normalize_media_value($value);
+      $encoded_value = auriel_partials_encode_media_value($media_value);
+      $media_placeholder_text = __('No media selected', AURIEL_THEME_TEXT_DOMAIN);
+      $media_image_label_text = __('Image', AURIEL_THEME_TEXT_DOMAIN);
+      $media_video_label_text = __('Video', AURIEL_THEME_TEXT_DOMAIN);
+      $media_video_fallback_text = __('Video selected', AURIEL_THEME_TEXT_DOMAIN);
+      echo '<div class="auriel-partials-media" data-partial-media data-media-placeholder="' . esc_attr($media_placeholder_text) . '" data-media-image-label="' . esc_attr($media_image_label_text) . '" data-media-video-label="' . esc_attr($media_video_label_text) . '" data-media-video-fallback="' . esc_attr($media_video_fallback_text) . '">';
+      echo '<input type="hidden" name="' . esc_attr($name) . '" value="' . esc_attr($encoded_value) . '" data-media-input />';
+      echo '<div class="auriel-partials-media-preview" data-media-preview>' . wp_kses_post(auriel_partials_media_preview_markup($media_value)) . '</div>';
+      echo '<div class="auriel-partials-media-actions">';
+      echo '<button type="button" class="button" data-media-select>' . esc_html__('Select media', AURIEL_THEME_TEXT_DOMAIN) . '</button>';
+      echo '<button type="button" class="button button-link-delete" data-media-remove>' . esc_html__('Remove media', AURIEL_THEME_TEXT_DOMAIN) . '</button>';
+      echo '</div>';
+      echo '<p class="description auriel-partials-media-meta" data-media-meta>';
+      if (!empty($media_value)) {
+        $label_prefix = 'image' === ($media_value['type'] ?? '')
+          ? $media_image_label_text
+          : $media_video_label_text;
+        $title = isset($media_value['title']) ? (string) $media_value['title'] : '';
+        $meta_label = '' !== $title ? $label_prefix . ': ' . $title : $label_prefix;
+        echo esc_html($meta_label);
+      }
+      echo '</p>';
+      echo '</div>';
       break;
 
     case 'image':
@@ -690,6 +891,10 @@ function auriel_partials_sanitize_field_value(string $type, $value)
     case 'url':
       return esc_url_raw((string) ($value ?? ''));
 
+    case 'media':
+      $media_value = auriel_partials_normalize_media_value($value);
+      return auriel_partials_compact_media_value($media_value);
+
     case 'image':
       return max(0, (int) $value);
 
@@ -739,6 +944,11 @@ function auriel_partials_get_fields(string $slug, int $post_id = 0): array
 
     if ('gallery' === $type) {
       $values[$field_key] = auriel_partials_normalize_gallery_value($stored);
+      continue;
+    }
+
+    if ('media' === $type) {
+      $values[$field_key] = auriel_partials_normalize_media_value($stored);
       continue;
     }
 
